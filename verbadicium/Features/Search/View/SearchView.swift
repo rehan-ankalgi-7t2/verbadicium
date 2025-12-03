@@ -12,15 +12,14 @@ struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
-
                 // MARK: Search Bar
                 HStack {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
-
+                        
                         TextField("Search a word", text: $viewModel.query, onCommit: {
                             viewModel.search()
                         })
@@ -29,21 +28,21 @@ struct SearchView: View {
                     .padding(10)
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
-
+                    
                     if viewModel.isLoading {
                         ProgressView()
                             .padding(.leading, 6)
                     }
                 } // Search Bar
                 .padding(.horizontal)
-
+                
                 // MARK: Error
                 if let err = viewModel.errorMessage {
                     Text(err)
                         .foregroundColor(.red)
                         .padding(.horizontal)
                 }
-
+                
                 // MARK: Results
                 List(viewModel.results) { wordDef in
                     NavigationLink(
@@ -55,6 +54,8 @@ struct SearchView: View {
                     }
                 }
                 .listStyle(.plain)
+                
+                Spacer()
             }
             .navigationTitle("Verbadicium 🪄")
         }

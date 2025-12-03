@@ -43,7 +43,9 @@ struct WordDetailView: View {
                             HStack {
                                 Text(meaning.partOfSpeech?.capitalized ?? "")
                                     .font(.headline)
-                                Divider()
+                                VStack {
+                                    Divider()
+                                }
                             }
                             
                             ForEach(meaning.definitions.indices, id: \.self) { i in
@@ -73,22 +75,44 @@ struct WordDetailView: View {
 
 struct AudioPlayerButton: View {
     let url: URL
+
+    @State private var player: AVPlayer? = nil
     @State private var isPlaying = false
 
     var body: some View {
-        Button(action: play) {
-            Image(systemName: "speaker.wave.2.fill")
+        Button(action: togglePlayback) {
+            Image(systemName: isPlaying ? "pause.fill" : "speaker.wave.2.fill")
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.purple)
+                .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(Color.purple.opacity(0.2))
+                .background(Color.purple)
                 .clipShape(Circle())
+        }
+        .onDisappear {
+            player?.pause()
         }
     }
 
-    func play() {
-        // Simple way: use AVPlayer. For production: cache audio and handle interruptions.
-        let player = AVPlayer(url: url)
-        player.play()
+    private func togglePlayback() {
+        if player == nil {
+            player = AVPlayer(url: url)
+
+            // Observe when playback ends
+            NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: player?.currentItem,
+                queue: .main
+            ) { _ in
+                isPlaying = false
+            }
+        }
+
+        if isPlaying {
+            player?.pause()
+        } else {
+            player?.play()
+        }
+
+        isPlaying.toggle()
     }
 }

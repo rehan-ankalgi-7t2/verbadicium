@@ -14,6 +14,6 @@ struct SearchTab: View {
         let vm = container.resolve(SearchViewModel.self)
         NavigationStack {
             SearchView(viewModel: vm)
-        }
+        }.navigationTitle("Verbadicium")
     }
 }
